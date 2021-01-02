@@ -1,2 +1,3 @@
 brazil_imp_exp/data/*
 !brazil_imp_exp/data/.gitkeep
+brazil_imp_exp/_build
