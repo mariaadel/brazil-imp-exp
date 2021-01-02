@@ -22,31 +22,33 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import datetime
-filename = "./data/EXP_COMPLETA_MUN.csv"
+filename = "./data/EXP_COMPLETA.zip"
 chunksize = 10 ** 6
 
 def process(chunk):
-  return chunk
+  df = chunk
+  df['Date'] = pd.to_datetime(df.CO_ANO.astype(str) + '/' + df.CO_MES.astype(str) + '/01')
+  res = df.groupby(['Date']).agg('sum').reset_index()[['Date', 'KG_LIQUIDO']]
+  return res
 frames = []
 with pd.read_csv(filename, sep=";" ,chunksize=chunksize, squeeze=True) as reader:
     for chunk in reader:
         frames.append(process(chunk))
-df = pd.concat(frames).groupby(['CO_ANO', 'CO_MES', 'CO_PAIS']).agg('sum').reset_index()
-df['Date'] = pd.to_datetime(df.CO_ANO.astype(str) + '/' + df.CO_MES.astype(str) + '/01')
-for label, df1 in df.groupby('CO_PAIS'):
-  plt.plot(df1.Date, df1.KG_LIQUIDO, label=label)
-plt.tight_layout()
+df = pd.concat(frames).groupby(['Date']).agg('sum').reset_index()
+plt.suptitle('exports LIQUIDO in Kg per Year')
+plt.plot(df.Date, df.KG_LIQUIDO)
+plt.figure()
 plt.show()
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mModuleNotFoundError[0m                       Traceback (most recent call last)
-[0;32m<ipython-input-1-53100a4f20c7>[0m in [0;36m<module>[0;34m[0m
+[0;32m<ipython-input-1-a72ca2dda025>[0m in [0;36m<module>[0;34m[0m
 [1;32m      2[0m [0;32mimport[0m [0mmatplotlib[0m[0;34m.[0m[0mpyplot[0m [0;32mas[0m [0mplt[0m[0;34m[0m[0;34m[0m[0m
 [1;32m      3[0m [0;32mimport[0m [0mnumpy[0m [0;32mas[0m [0mnp[0m[0;34m[0m[0;34m[0m[0m
 [0;32m----> 4[0;31m [0;32mimport[0m [0mpandas[0m [0;32mas[0m [0mpd[0m[0;34m[0m[0;34m[0m[0m
 [0m[1;32m      5[0m [0;32mimport[0m [0mdatetime[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      6[0m [0mfilename[0m [0;34m=[0m [0;34m"./data/EXP_COMPLETA_MUN.csv"[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      6[0m [0mfilename[0m [0;34m=[0m [0;34m"./data/EXP_COMPLETA.zip"[0m[0;34m[0m[0;34m[0m[0m
 
 [0;31mModuleNotFoundError[0m: No module named 'pandas'
 ModuleNotFoundError: No module named 'pandas'
